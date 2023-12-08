@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSync.Discord", "MSync.Discord\MSync.Discord.csproj", "{12FE90FE-70E9-43AC-A63F-E2805E95F806}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSyncBot.Discord", "MSyncBot.Discord\MSyncBot.Discord.csproj", "{12FE90FE-70E9-43AC-A63F-E2805E95F806}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
