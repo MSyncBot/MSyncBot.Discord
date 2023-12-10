@@ -7,4 +7,11 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="DSharpPlus" Version="4.4.3" />
+      <PackageReference Include="DSharpPlus.SlashCommands" Version="4.4.3" />
+      <PackageReference Include="MDatabase" Version="1.0.0" />
+      <PackageReference Include="MLogger" Version="1.0.0" />
+    </ItemGroup>
+
 </Project>
