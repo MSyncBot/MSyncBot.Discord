@@ -1,6 +1,5 @@
 ﻿namespace MSyncBot.Discord.Handlers;
 
-public class Guild
+public class GuildHandler
 {
-    
 }
