@@ -5,9 +5,9 @@ namespace MSyncBot.Discord.Data;
 
 public class User
 {
+    public string AvatarUrl;
     public ulong Id;
     public string Username;
-    public string AvatarUrl;
 
     public User(DiscordUser user)
     {
@@ -15,7 +15,7 @@ public class User
         Username = user.Username;
         AvatarUrl = user.AvatarUrl;
     }
-    
+
     public User(ulong id, string username, string avatarUrl)
     {
         Id = id;
@@ -28,14 +28,14 @@ public class User
         try
         {
             Bot.Logger.LogProcess($"Adding a new user: {Username} ({Id}) to the database...");
-            
+
             var sqlQuery = "INSERT INTO Users (Id, Username, AvatarUrl)" +
                 " VALUES (@Id, @Username, AvatarUrl)";
-            await Bot.Database.ExecuteNonQueryAsync(sqlQuery, 
+            await Bot.Database.ExecuteNonQueryAsync(sqlQuery,
                 new MySqlParameter("Id", Id),
-                new MySqlParameter("Username", Username), 
+                new MySqlParameter("Username", Username),
                 new MySqlParameter("AvatarUrl", AvatarUrl));
-            
+
             Bot.Logger.LogSuccess("The new user has been successfully added to the database.");
         }
         catch (Exception ex)
@@ -53,12 +53,10 @@ public class User
             reader = await Bot.Database.ExecuteQueryAsync(sqlQuery,
                 new MySqlParameter("Id", Id));
             if (await reader.ReadAsync())
-            {
                 return new User(
                     reader.GetUInt64("Id"),
                     reader.GetString("Username"),
                     reader.GetString("AvatarUrl"));
-            }
         }
         catch (Exception ex)
         {
@@ -77,11 +75,11 @@ public class User
         try
         {
             Bot.Logger.LogProcess($"Deleting the user: {Username} ({Id}) from the database...");
-            
+
             var sqlQuery = "DELETE FROM Users WHERE Id = @Id";
-            await Bot.Database.ExecuteNonQueryAsync(sqlQuery, 
+            await Bot.Database.ExecuteNonQueryAsync(sqlQuery,
                 new MySqlParameter("Id", Id));
-            
+
             Bot.Logger.LogSuccess("The user has been successfully deleted from the database.");
         }
         catch (Exception ex)

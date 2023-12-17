@@ -1,4 +1,5 @@
-﻿using DSharpPlus;
+﻿using System.Net;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Microsoft.Extensions.Logging;
@@ -17,8 +18,8 @@ public class Bot
 
         Token = token;
         Database = database;
-        Server = new ServerHandler("127.0.0.1");
-        
+        Server = new Client("127.0.0.1", 8080);
+
         Logger.LogSuccess("The bot has been successfully initialized.");
     }
 
@@ -26,7 +27,7 @@ public class Bot
     public static MLogger Logger { get; private set; }
     public static MDatabase.MDatabase Database { get; private set; }
     public static DiscordClient Client { get; private set; }
-    public static ServerHandler Server { get; set; }
+    public static Client Server { get; set; }
 
     public async Task StartAsync()
     {
@@ -47,37 +48,26 @@ public class Bot
 
         Client = new DiscordClient(botConfig);
 
-        Client.Ready += Ready.ReadyHandler;
-        Client.ClientErrored += Error.ErrorHandler;
+        Client.Ready += ReadyHandler.GetReady;
+        Client.ClientErrored += ErrorHandler.GetError;
         //Client.GuildAvailable += Guild.GuildAvailableHandler;
         //Client.GuildCreated += Guild.GuildCreatedHandlerAsync;
-        Client.MessageCreated += Message.MessageCreatedHandler;
-        
+        Client.MessageCreated += MessageHandler.MessageCreated;
+
         var slashCommands = Client.UseSlashCommands();
-        slashCommands.SlashCommandErrored += SlashCommand.ErrorHandlerAsync;
-        slashCommands.SlashCommandInvoked += SlashCommand.InvokeHandlerAsync;
-        slashCommands.SlashCommandExecuted += SlashCommand.ExecuteHandlerAsync;
+        slashCommands.SlashCommandErrored += SlashCommandHandler.ErrorHandlerAsync;
+        slashCommands.SlashCommandInvoked += SlashCommandHandler.InvokeHandlerAsync;
+        slashCommands.SlashCommandExecuted += SlashCommandHandler.ExecuteHandlerAsync;
 
         var activity = new DiscordActivity("Sync messages", ActivityType.Playing);
 
         await Client.ConnectAsync(activity, UserStatus.Online);
 
-        _ = Task.Run(async () =>
-        {
-            await Server.ConnectToServerAsync();
-            var stream = Server.TcpClient.GetStream();
-            while (Server.TcpClient.Connected)
-            {
-                var client = await Server.ReceiveMessageAsync(stream);
-                Logger.LogInformation(client.Name + ": " + client.Message);
-                var guild = await Client.GetGuildAsync(1101889864523337848);
-                await guild.GetDefaultChannel().SendMessageAsync(client.Name + ": " + client.Message);
-            }
-        });
-        
+        Server.ConnectAsync();
+
         Logger.LogSuccess("The bot is running.");
     }
-    
+
 
     public async Task StopAsync() => await Client.DisconnectAsync();
 }

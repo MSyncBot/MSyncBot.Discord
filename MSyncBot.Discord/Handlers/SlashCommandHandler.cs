@@ -3,7 +3,7 @@ using DSharpPlus.SlashCommands.EventArgs;
 
 namespace MSyncBot.Discord.Handlers;
 
-public class SlashCommand
+public class SlashCommandHandler
 {
     public static Task ExecuteHandlerAsync(SlashCommandsExtension sender, SlashCommandExecutedEventArgs args)
     {
