@@ -24,19 +24,12 @@ public class MessageHandler
                     if (!attachment.MediaType.StartsWith("image"))
                         continue;
 
+                    using var webClient = new WebClient();
+                    var photoBytes = await webClient.DownloadDataTaskAsync(new Uri(attachment.Url));
+
                     var photoName = Guid.NewGuid().ToString();
                     const string extension = ".png";
-                    var destinationFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-                        "UserPhotos",
-                        $"{photoName}{extension}");
 
-                    using (var webClient = new WebClient())
-                    {
-                        webClient.DownloadFile(new Uri(attachment.Url), destinationFilePath);   
-                    }
-                    
-                    var photoBytes = await File.ReadAllBytesAsync(destinationFilePath);
-                    
                     var mediaFile = new MediaFile(photoName, extension, photoBytes, FileType.Photo);
                     var photoMessage = new Message("MSyncBot.Discord",
                         2,
@@ -44,9 +37,9 @@ public class MessageHandler
                         MessageType.Photo,
                         new User(mc.Author.Username));
                     photoMessage.MediaFiles.Add(mediaFile);
+
                     var jsonPhotoMessage = JsonSerializer.Serialize(photoMessage);
                     Bot.Server.SendTextAsync(jsonPhotoMessage);
-                    File.Delete(destinationFilePath);
                 }
 
                 return;

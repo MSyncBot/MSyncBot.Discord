@@ -68,21 +68,16 @@ public class Client : WsClient
                 case MessageType.Video:
                 case MessageType.Photo:
                 {
-                    Bot.Logger.LogInformation($"Received photo: {message.SenderName} - " +
-                        $"{message.MediaFiles[0].Name}{message.MediaFiles[0].Extension}");
+                    Bot.Logger.LogInformation($"Received photo: {message.SenderName} - {message.MediaFiles[0].Name}{message.MediaFiles[0].Extension}");
 
-                    var userPhotosPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "UserPhotos");
-                    Directory.CreateDirectory(userPhotosPath);
-                    var filePath = Path.Combine(userPhotosPath,
-                        $"{message.MediaFiles[0].Name}{message.MediaFiles[0].Extension}");
-                    await File.WriteAllBytesAsync(filePath, message.MediaFiles[0].Data);
+                    var photoBytes = message.MediaFiles[0].Data;
 
-                    await using Stream stream = File.OpenRead(filePath);
+                    using var memoryStream = new MemoryStream(photoBytes);
                     var messageBuilder = new DiscordMessageBuilder()
                         .WithContent($"Время, за которое сообщение пришло: {DateTime.Now - message.Timestamp}")
-                        .AddFile($"{message.MediaFiles[0].Name}{message.MediaFiles[0].Extension}", stream);
+                        .AddFile($"{message.MediaFiles[0].Name}{message.MediaFiles[0].Extension}", memoryStream);
+        
                     await channel.SendMessageAsync(messageBuilder);
-                    File.Delete(filePath);
                     return;
                 }
             }
