@@ -64,7 +64,8 @@ public class Client : WsClient
                     await channel.SendMessageAsync($"{message.Content}\n\n" +
                         $"Время, за которое сообщение пришло: {DateTime.Now - message.Timestamp}");
                     return;
-
+                
+                case MessageType.Video:
                 case MessageType.Photo:
                 {
                     Bot.Logger.LogInformation($"Received photo: {message.SenderName} - " +
