@@ -2,9 +2,9 @@ using System.Net;
 using System.Text.Json;
 using DSharpPlus;
 using DSharpPlus.EventArgs;
-using MSyncBot.Discord.Handlers.Server.Types;
-using MSyncBot.Discord.Handlers.Server.Types.Enums;
-using MessageType = MSyncBot.Discord.Handlers.Server.Types.Enums.MessageType;
+using MSyncBot.Types;
+using MSyncBot.Types.Enums;
+using MessageType = DSharpPlus.MessageType;
 
 namespace MSyncBot.Discord.Handlers;
 
@@ -34,7 +34,7 @@ public class MessageHandler
                     var photoMessage = new Message("MSyncBot.Discord",
                         2,
                         SenderType.Discord,
-                        MessageType.Photo,
+                        Types.Enums.MessageType.Photo,
                         new User(mc.Author.Username));
                     photoMessage.MediaFiles.Add(mediaFile);
 
@@ -48,9 +48,9 @@ public class MessageHandler
             var multicastMessage = new Message("MSyncBot.Discord",
                 2,
                 SenderType.Discord,
-                MessageType.Text,
+                Types.Enums.MessageType.Text,
                 new User("Discord")
-                )
+            )
             {
                 Content = mc.Message.Content
             };

@@ -2,14 +2,16 @@
 using System.Text;
 using System.Text.Json;
 using DSharpPlus.Entities;
-using MSyncBot.Discord.Handlers.Server.Types;
-using MSyncBot.Discord.Handlers.Server.Types.Enums;
+using MSyncBot.Types;
+using MSyncBot.Types.Enums;
 using NetCoreServer;
 
 namespace MSyncBot.Discord.Handlers.Server;
 
 public class Client : WsClient
 {
+    private bool _stop;
+
     public Client(string address, int port) : base(address, port)
     {
     }
@@ -52,7 +54,7 @@ public class Client : WsClient
             var jsonMessage = Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
             var message = JsonSerializer.Deserialize<Message>(jsonMessage);
 
-            if (message.SenderType is SenderType.Discord)
+            if (message.SenderType is SenderType.Discord)   
                 return;
 
             var guild = await Bot.Client.GetGuildAsync(1101889864523337848);
@@ -62,13 +64,14 @@ public class Client : WsClient
                 case MessageType.Text:
                     Bot.Logger.LogInformation($"Received message: {message.SenderName} - {message.Content}");
                     await channel.SendMessageAsync($"{message.Content}\n\n" +
-                        $"Время, за которое сообщение пришло: {DateTime.Now - message.Timestamp}");
+                                                   $"Время, за которое сообщение пришло: {DateTime.Now - message.Timestamp}");
                     return;
-                
+
                 case MessageType.Video:
                 case MessageType.Photo:
                 {
-                    Bot.Logger.LogInformation($"Received photo: {message.SenderName} - {message.MediaFiles[0].Name}{message.MediaFiles[0].Extension}");
+                    Bot.Logger.LogInformation(
+                        $"Received photo: {message.SenderName} - {message.MediaFiles[0].Name}{message.MediaFiles[0].Extension}");
 
                     var photoBytes = message.MediaFiles[0].Data;
 
@@ -76,7 +79,7 @@ public class Client : WsClient
                     var messageBuilder = new DiscordMessageBuilder()
                         .WithContent($"Время, за которое сообщение пришло: {DateTime.Now - message.Timestamp}")
                         .AddFile($"{message.MediaFiles[0].Name}{message.MediaFiles[0].Extension}", memoryStream);
-        
+
                     await channel.SendMessageAsync(messageBuilder);
                     return;
                 }
@@ -100,6 +103,4 @@ public class Client : WsClient
     {
         Bot.Logger.LogError($"Chat WebSocket client caught an error with code {error}");
     }
-
-    private bool _stop;
 }

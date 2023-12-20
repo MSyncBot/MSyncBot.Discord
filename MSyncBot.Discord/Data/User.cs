@@ -30,7 +30,7 @@ public class User
             Bot.Logger.LogProcess($"Adding a new user: {Username} ({Id}) to the database...");
 
             var sqlQuery = "INSERT INTO Users (Id, Username, AvatarUrl)" +
-                " VALUES (@Id, @Username, AvatarUrl)";
+                           " VALUES (@Id, @Username, AvatarUrl)";
             await Bot.Database.ExecuteNonQueryAsync(sqlQuery,
                 new MySqlParameter("Id", Id),
                 new MySqlParameter("Username", Username),

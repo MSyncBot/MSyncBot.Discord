@@ -1,5 +1,4 @@
-﻿using System.Net;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Microsoft.Extensions.Logging;
@@ -38,10 +37,10 @@ public class Bot
             Token = Token,
             TokenType = TokenType.Bot,
             Intents = DiscordIntents.Guilds
-                | DiscordIntents.GuildVoiceStates
-                | DiscordIntents.GuildIntegrations
-                | DiscordIntents.GuildMessages
-                | DiscordIntents.MessageContents,
+                      | DiscordIntents.GuildVoiceStates
+                      | DiscordIntents.GuildIntegrations
+                      | DiscordIntents.GuildMessages
+                      | DiscordIntents.MessageContents,
             AutoReconnect = true,
             MinimumLogLevel = LogLevel.None
         };
@@ -69,5 +68,8 @@ public class Bot
     }
 
 
-    public async Task StopAsync() => await Client.DisconnectAsync();
+    public async Task StopAsync()
+    {
+        await Client.DisconnectAsync();
+    }
 }
