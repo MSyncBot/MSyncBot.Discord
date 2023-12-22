@@ -17,7 +17,7 @@ public class Bot
 
         Token = token;
         Database = database;
-        Server = new Client("127.0.0.1", 8080);
+        Server = new Client("127.0.0.1", 1689);
 
         Logger.LogSuccess("The bot has been successfully initialized.");
     }
