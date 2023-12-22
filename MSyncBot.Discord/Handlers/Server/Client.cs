@@ -54,7 +54,7 @@ public class Client : WsClient
             var jsonMessage = Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
             var message = JsonSerializer.Deserialize<Message>(jsonMessage);
 
-            if (message.SenderType is SenderType.Discord)   
+            if (message.SenderType is SenderType.Discord)
                 return;
 
             var guild = await Bot.Client.GetGuildAsync(1101889864523337848);
@@ -67,20 +67,25 @@ public class Client : WsClient
                                                    $"Время, за которое сообщение пришло: {DateTime.Now - message.Timestamp}");
                     return;
 
+                case MessageType.Album:
                 case MessageType.Video:
                 case MessageType.Photo:
                 {
                     Bot.Logger.LogInformation(
                         $"Received photo: {message.SenderName} - {message.MediaFiles[0].Name}{message.MediaFiles[0].Extension}");
 
-                    var photoBytes = message.MediaFiles[0].Data;
+                    var messageBuilder = new DiscordMessageBuilder();
 
-                    using var memoryStream = new MemoryStream(photoBytes);
-                    var messageBuilder = new DiscordMessageBuilder()
-                        .WithContent($"Время, за которое сообщение пришло: {DateTime.Now - message.Timestamp}")
-                        .AddFile($"{message.MediaFiles[0].Name}{message.MediaFiles[0].Extension}", memoryStream);
+                    foreach (var file in message.MediaFiles)
+                    { 
+                        var memoryStream = new MemoryStream(file.Data);
+                        messageBuilder.AddFile($"{file.Name}{file.Extension}", memoryStream);
+                    }
+                    
+                    messageBuilder.WithContent($"Время, за которое сообщение пришло: {DateTime.Now - message.Timestamp}");
 
                     await channel.SendMessageAsync(messageBuilder);
+
                     return;
                 }
             }
