@@ -70,15 +70,10 @@ public class Client : WsClient
 
                 default:
                 {
-                    if (message.MessageType is MessageType.Album)
-                        Bot.Logger.LogInformation(
-                            $"Received album from {message.SenderName} with {message.MediaFiles.Count} files: " +
-                            $"{message.User.FirstName} ({message.User.Id})");
-                    else
-                    {
-                        
-                    }
-                    
+                    Bot.Logger.LogInformation(
+                        $"Received album from {message.SenderName} with {message.MediaFiles.Count} files: " +
+                        $"{message.User.FirstName} ({message.User.Id})");
+
                     var messageBuilder = new DiscordMessageBuilder();
 
                     foreach (var file in message.MediaFiles)
