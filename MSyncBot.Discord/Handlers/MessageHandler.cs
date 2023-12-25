@@ -23,7 +23,7 @@ public class MessageHandler
             {
                 case > 0 and 1:
                     var attachment = attachments.FirstOrDefault();
-                    var downloadedFile = await new MediaFileHandler()
+                    var downloadedFile = await new FileHandler()
                         .DownloadFileAsync(attachment);
 
                     var messageType = downloadedFile.FileType switch
