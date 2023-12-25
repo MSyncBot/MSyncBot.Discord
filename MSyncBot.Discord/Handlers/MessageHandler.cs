@@ -4,7 +4,7 @@ using DSharpPlus;
 using DSharpPlus.EventArgs;
 using MSyncBot.Types;
 using MSyncBot.Types.Enums;
-using MessageType = DSharpPlus.MessageType;
+using MessageType = MSyncBot.Types.Enums.MessageType;
 
 namespace MSyncBot.Discord.Handlers;
 
@@ -14,48 +14,70 @@ public class MessageHandler
     {
         try
         {
-            if (mc.Author.Id == Bot.Client.CurrentUser.Id)
+            var user = mc.Author;
+            if (user.Id == Bot.Client.CurrentUser.Id)
                 return;
 
-            if (mc.Message.Attachments.Count > 0)
+            var attachments = mc.Message.Attachments;
+            switch (attachments.Count)
             {
-                foreach (var attachment in mc.Message.Attachments)
-                {
-                    if (!attachment.MediaType.StartsWith("image"))
-                        continue;
+                case > 0 and 1:
+                    var attachment = attachments.FirstOrDefault();
+                    var downloadedFile = await new MediaFileHandler()
+                        .DownloadFileAsync(attachment);
 
-                    using var webClient = new WebClient();
-                    var photoBytes = await webClient.DownloadDataTaskAsync(new Uri(attachment.Url));
-
-                    var photoName = Guid.NewGuid().ToString();
-                    const string extension = ".png";
-
-                    var mediaFile = new MediaFile(photoName, extension, photoBytes, FileType.Photo);
-                    var photoMessage = new Message("MSyncBot.Discord",
+                    var messageType = downloadedFile.FileType switch
+                    {
+                        FileType.Photo => MessageType.Photo,
+                        FileType.Video => MessageType.Video,
+                        FileType.Audio => MessageType.Audio,
+                        _ => MessageType.Document,
+                    };
+                    
+                    var fileMessage = new Message("MSyncBot.Discord",
                         2,
                         SenderType.Discord,
-                        Types.Enums.MessageType.Photo,
-                        new User(mc.Author.Username));
-                    photoMessage.MediaFiles.Add(mediaFile);
-
-                    var jsonPhotoMessage = JsonSerializer.Serialize(photoMessage);
-                    Bot.Server.SendTextAsync(jsonPhotoMessage);
+                        messageType,
+                        new User(user.Username, id: user.Id));
+                    fileMessage.MediaFiles.Add(downloadedFile);
+                    fileMessage.Content = mc.Message.Content;
+                
+                    var fileJsonMessage = JsonSerializer.Serialize(fileMessage);
+                    Bot.Server.SendTextAsync(fileJsonMessage);
+                    return;
+                case > 0:
+                {
+                    var downloadFilesTasks = new List<Task<MediaFile?>>();
+                    downloadFilesTasks.AddRange(attachments.Select(attachment =>
+                        new MediaFileHandler().DownloadFileAsync(attachment)));
+                    var downloadedFiles = await Task.WhenAll(downloadFilesTasks);
+                
+                    var albumMessage = new Message("MSyncBot.Discord",
+                        2,
+                        SenderType.Discord,
+                        MessageType.Album,
+                        new User(user.Username, id: user.Id));
+                    albumMessage.MediaFiles.AddRange(downloadedFiles!);
+                    albumMessage.Content = mc.Message.Content;
+                
+                    var albumJsonMessage = JsonSerializer.Serialize(albumMessage);
+                    Bot.Server.SendTextAsync(albumJsonMessage);
+                    return;
                 }
-
-                return;
             }
-
-            var multicastMessage = new Message("MSyncBot.Discord",
+            
+            var textMessage = new Message("MSyncBot.Discord",
                 2,
                 SenderType.Discord,
-                Types.Enums.MessageType.Text,
-                new User("Discord")
+                MessageType.Text,
+                new User(user.Username, id: user.Id)
             )
             {
                 Content = mc.Message.Content
             };
-            var jsonMessage = JsonSerializer.Serialize(multicastMessage);
-            Bot.Server.SendTextAsync(jsonMessage);
+
+            var jsonTextMessage = JsonSerializer.Serialize(textMessage);
+            Bot.Server.SendTextAsync(jsonTextMessage);
         }
         catch (Exception ex)
         {
