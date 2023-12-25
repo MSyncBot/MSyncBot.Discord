@@ -49,7 +49,7 @@ public class MessageHandler
                 {
                     var downloadFilesTasks = new List<Task<MediaFile?>>();
                     downloadFilesTasks.AddRange(attachments.Select(attachment =>
-                        new MediaFileHandler().DownloadFileAsync(attachment)));
+                        new FileHandler().DownloadFileAsync(attachment)));
                     var downloadedFiles = await Task.WhenAll(downloadFilesTasks);
                 
                     var albumMessage = new Message("MSyncBot.Discord",
