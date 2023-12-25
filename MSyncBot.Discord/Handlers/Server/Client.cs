@@ -62,28 +62,33 @@ public class Client : WsClient
             switch (message.MessageType)
             {
                 case MessageType.Text:
-                    Bot.Logger.LogInformation($"Received message: {message.SenderName} - {message.Content}");
-                    await channel.SendMessageAsync($"{message.Content}\n\n" +
-                                                   $"Время, за которое сообщение пришло: {DateTime.Now - message.Timestamp}");
+                    Bot.Logger.LogInformation(
+                        $"Received message from {message.SenderName}: " +
+                        $"{message.User.FirstName} ({message.User.Id}) - {message.Content}");
+                    await channel.SendMessageAsync($"{message.User.FirstName}: {message.Content}");
                     return;
 
-                case MessageType.Album:
-                case MessageType.Video:
-                case MessageType.Photo:
+                default:
                 {
-                    Bot.Logger.LogInformation(
-                        $"Received photo: {message.SenderName} - {message.MediaFiles[0].Name}{message.MediaFiles[0].Extension}");
-
+                    if (message.MessageType is MessageType.Album)
+                        Bot.Logger.LogInformation(
+                            $"Received album from {message.SenderName} with {message.MediaFiles.Count} files: " +
+                            $"{message.User.FirstName} ({message.User.Id})");
+                    else
+                    {
+                        
+                    }
+                    
                     var messageBuilder = new DiscordMessageBuilder();
 
                     foreach (var file in message.MediaFiles)
-                    { 
+                    {
                         var memoryStream = new MemoryStream(file.Data);
                         messageBuilder.AddFile($"{file.Name}{file.Extension}", memoryStream);
                     }
-                    
-                    messageBuilder.WithContent($"Время, за которое сообщение пришло: {DateTime.Now - message.Timestamp}");
 
+                    messageBuilder.WithContent(
+                        $"");
                     await channel.SendMessageAsync(messageBuilder);
 
                     return;
