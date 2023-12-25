@@ -83,7 +83,7 @@ public class Client : WsClient
                     }
 
                     messageBuilder.WithContent(
-                        $"");
+                        $"{message.User.FirstName}: {message.Content}");
                     await channel.SendMessageAsync(messageBuilder);
 
                     return;
