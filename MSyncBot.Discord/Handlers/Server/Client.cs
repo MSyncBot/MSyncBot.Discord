@@ -11,6 +11,7 @@ namespace MSyncBot.Discord.Handlers.Server;
 public class Client : WsClient
 {
     private bool _stop;
+    private static ulong? _lastUserId = null;
 
     public Client(string address, int port) : base(address, port)
     {
@@ -65,7 +66,33 @@ public class Client : WsClient
                     Bot.Logger.LogInformation(
                         $"Received message from {message.SenderName}: " +
                         $"{message.User.FirstName} ({message.User.Id}) - {message.Content}");
-                    await channel.SendMessageAsync($"{message.User.FirstName}: {message.Content}");
+
+                    DiscordEmbedBuilder? embed;
+
+                    if (_lastUserId != message.User.Id)
+                    {
+                        embed = new DiscordEmbedBuilder
+                            {
+                                Title = "Telegram",
+                                Color = DiscordColor.Azure,
+                                Description = message.Content,
+                            }
+                            .WithAuthor(name: $"{message.User.FirstName} {message.User.LastName}",
+                                iconUrl: message.User.AvatarUrl)
+                            .WithTimestamp(DateTime.Now);
+                    }
+                    else
+                    {
+                        embed = new DiscordEmbedBuilder()
+                        {
+                            Color = DiscordColor.Azure,
+                            Description = message.Content,
+                        };
+                    }
+                    
+                    _lastUserId = message.User.Id;
+
+                    await channel.SendMessageAsync(embed.Build());
                     return;
 
                 default:
