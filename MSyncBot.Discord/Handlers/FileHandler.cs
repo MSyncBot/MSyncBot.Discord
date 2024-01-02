@@ -1,12 +1,13 @@
 ﻿using DSharpPlus.Entities;
 using MSyncBot.Types;
 using MSyncBot.Types.Enums;
+using File = MSyncBot.Types.File;
 
 namespace MSyncBot.Discord.Handlers;
 
 public class FileHandler
 {
-    public async Task<MediaFile?> DownloadFileAsync(DiscordAttachment attachment)
+    public async Task<File?> DownloadFileAsync(DiscordAttachment attachment)
     {
         try
         {
@@ -27,8 +28,7 @@ public class FileHandler
                 _ => FileType.Document
             };
 
-            var file = new MediaFile(fileName, fileExtension, fileData, fileType);
-            return file;
+            return new File(fileName, fileExtension, fileData, fileType);
         }
         catch (Exception ex)
         {
