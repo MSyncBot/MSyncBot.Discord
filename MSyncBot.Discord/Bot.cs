@@ -17,7 +17,7 @@ public class Bot
 
         Token = token;
         Database = database;
-        Server = new Client("127.0.0.1", 1689);
+        Server = new ServerHandler("127.0.0.1", 1689);
 
         Logger.LogSuccess("The bot has been successfully initialized.");
     }
@@ -26,7 +26,7 @@ public class Bot
     public static MLogger Logger { get; private set; }
     public static MDatabase.MDatabase Database { get; private set; }
     public static DiscordClient Client { get; private set; }
-    public static Client Server { get; set; }
+    public static ServerHandler Server { get; set; }
 
     public async Task StartAsync()
     {
