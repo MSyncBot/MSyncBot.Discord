@@ -66,7 +66,7 @@ public class MessageHandler
                         new User(mc.Author.Username, mc.Author.Id),
                         new Chat(mc.Channel.Name, mc.Channel.Id)
                     );
-                    albumMessage.Files.AddRange(downloadedFiles!);
+                    albumMessage.Files.AddRange(downloadedFiles);
                     albumMessage.Text = mc.Message.Content;
                 
                     var albumJsonMessage = JsonSerializer.Serialize(albumMessage);
