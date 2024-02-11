@@ -20,6 +20,9 @@ public class MessageHandler
             if (user.Id == Bot.Client.CurrentUser.Id)
                 return;
 
+            if (mc.Channel.Id != 1054416672808775730)
+                return;
+
             ReceivedMessageHandler.LastUserId = mc.Author.Id;
             
             var attachments = mc.Message.Attachments;
