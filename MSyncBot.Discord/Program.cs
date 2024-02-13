@@ -3,7 +3,7 @@ using MLoggerService;
 
 namespace MSyncBot.Discord;
 
-internal class Program
+internal static class Program
 {
     private static async Task Main()
     {
