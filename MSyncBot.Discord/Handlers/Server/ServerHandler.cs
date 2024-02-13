@@ -8,7 +8,7 @@ using NetCoreServer;
 
 namespace MSyncBot.Discord.Handlers.Server;
 
-public class ServerHandler(string address, int port) : WsClient(address, port)
+public class ServerHandler(string? address, int port) : WsClient(address, port)
 {
     private bool _stop;
 
