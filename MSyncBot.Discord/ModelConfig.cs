@@ -1,4 +1,4 @@
-﻿namespace MSyncBot.Discord.Config;
+﻿namespace MSyncBot.Discord;
 
 public class ModelConfig
 {
