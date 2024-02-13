@@ -10,7 +10,7 @@
     <ItemGroup>
         <PackageReference Include="DSharpPlus" Version="4.4.6" />
         <PackageReference Include="DSharpPlus.SlashCommands" Version="4.4.6" />
-        <PackageReference Include="MConfiguration" Version="1.0.0" />
+        <PackageReference Include="MConfiguration" Version="1.0.1" />
         <PackageReference Include="MDatabase" Version="1.0.0"/>
         <PackageReference Include="MLogger" Version="1.0.0"/>
         <PackageReference Include="MSyncBot.Types" Version="2.0.3" />
