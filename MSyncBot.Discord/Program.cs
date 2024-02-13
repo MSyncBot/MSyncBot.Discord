@@ -23,14 +23,14 @@ internal class Program
             {
                 logger.LogInformation($"Enter value for {propertyName}:");
                 var value = Console.ReadLine();
-                config.Set(propertyName, value);
                 property.SetValue(modelConfig, Convert.ChangeType(value, property.PropertyType));
+                continue;
             }
-            else
-            {
-                property.SetValue(modelConfig, Convert.ChangeType(data, property.PropertyType));
-            }
+
+            property.SetValue(modelConfig, Convert.ChangeType(data, property.PropertyType));
         }
+        
+        config.Set(modelConfig);
 
         var bot = new Bot(
             token: modelConfig.BotToken,
