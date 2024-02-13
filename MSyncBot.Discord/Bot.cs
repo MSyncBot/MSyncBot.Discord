@@ -10,19 +10,19 @@ namespace MSyncBot.Discord;
 
 public class Bot
 {
-    public Bot(string token, MLogger logger, MDatabase.MDatabase database)
+    public Bot(string? token, MLogger logger, MDatabase.MDatabase database, string? serverIp, int serverPort)
     {
         Logger = logger;
         Logger.LogProcess("Initializing the bot...");
 
         Token = token;
         Database = database;
-        Server = new ServerHandler("127.0.0.1", 1689);
+        Server = new ServerHandler(serverIp, serverPort);
 
         Logger.LogSuccess("The bot has been successfully initialized.");
     }
 
-    private string Token { get; }
+    private string? Token { get; }
     public static MLogger Logger { get; private set; }
     public static MDatabase.MDatabase Database { get; private set; }
     public static DiscordClient Client { get; private set; }
