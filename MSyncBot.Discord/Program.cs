@@ -3,48 +3,46 @@ using MLoggerService;
 
 namespace MSyncBot.Discord;
 
-internal static class Program
+internal abstract class Program
 {
-    private static async Task Main()
+    private static void Main(string[] args)
     {
         var logger = new MLogger();
-        logger.LogProcess("Logger initializing...");
+        logger.LogProcess("Initializing logger...");
         logger.LogSuccess("Logger successfully initialized.");
 
-        var config = new ConfigManager();
-        var modelConfig = new ModelConfig();
-
-        foreach (var property in typeof(ModelConfig).GetProperties())
+        logger.LogProcess("Initializing program configuration...");
+        var configManager = new ConfigManager();
+        var programConfig = new ProgramConfiguration();
+        foreach (var property in typeof(ProgramConfiguration).GetProperties())
         {
             var propertyName = property.Name;
-            var data = config.Get(propertyName);
+            var data = configManager.Get(propertyName);
 
             if (string.IsNullOrEmpty(data))
             {
                 logger.LogInformation($"Enter value for {propertyName}:");
-                var value = Console.ReadLine();
-                property.SetValue(modelConfig, Convert.ChangeType(value, property.PropertyType));
-                continue;
+                data = Console.ReadLine();
             }
-
-            property.SetValue(modelConfig, Convert.ChangeType(data, property.PropertyType));
+            
+            property.SetValue(programConfig, Convert.ChangeType(data, property.PropertyType));
         }
         
-        config.Set(modelConfig);
+        configManager.Set(programConfig);
+
+        logger.LogSuccess("Program configuration has been initialized.");
 
         var bot = new Bot(
-            token: modelConfig.BotToken,
-            logger: logger,
-            database: new MDatabase.MDatabase(
-                modelConfig.DatabaseIp,
-                modelConfig.DatabaseName,
-                modelConfig.DatabaseUser,
-                modelConfig.DatabaseUserPassword
-                ),
-            serverIp: modelConfig.ServerIp,
-            serverPort: modelConfig.ServerPort
-        );
-        await bot.StartAsync();
-        await Task.Delay(-1);
+            programConfig.BotToken, 
+            programConfig.ServerIp,
+            programConfig.ServerPort,
+            logger);
+        _ = Task.Run(async () => await bot.StartAsync());
+
+        Thread.Sleep(1500); // waiting for starting bot
+
+        logger.LogInformation("Press any key to close program...");
+        Console.ReadKey();
+        bot.StopAsync().Wait();
     }
 }
